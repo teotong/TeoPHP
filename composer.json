@@ -1,0 +1,7 @@
+{
+    "require": {
+        "voku/anti-xss": "^1.2",
+        "monolog/monolog": "^1.17",
+        "php-curl-class/php-curl-class": "^4.10"
+    }
+}
