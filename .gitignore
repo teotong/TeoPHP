@@ -5,5 +5,7 @@ vendor
 composer.lock
 
 /log/*
+!/log/.gitkeep
+
 
 
