@@ -1,5 +1,5 @@
 # TeoPHP
-php框架
+简单的php框架
 
 ##需求
 
