@@ -17,6 +17,10 @@
 
 * 常用扩展
 
+####安装
+
+composer install
+
 ###目录结构
 <pre>
 
