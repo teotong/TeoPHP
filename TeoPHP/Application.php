@@ -52,7 +52,7 @@ class Application
         if ($folder == 'interface') {
             $class = '\\interface\\' . $action;
         } else {
-            $class = '\\app\\' . $folder . '\\' . $action;
+            $class = '\\controllers\\' . $folder . '\\' . $action;
         }
         try {
             $a = new $class;

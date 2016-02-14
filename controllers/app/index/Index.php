@@ -1,6 +1,6 @@
 <?php
 
-namespace app\controller\index;
+namespace controllers\app\index;
 
 use TeoPHP\Controller;
 use TeoPHP\Application;
@@ -88,14 +88,16 @@ class Index extends Controller
         $returnArr = Application::verifyParam($_REQUEST, $this->params);
         if($returnArr['code'] != 10000) {
             Application::getLogger(__CLASS__. ':' .__LINE__)->addError('Parameter error' , $returnArr);
+            #TODO   返回
+            die('welcome');
 //            $this->writeLog('test', false, '测试1111', $encode, 'debug');
 //            $noticeMsg = $this->getNoticeMsg($returnArr[1]['code']);
 //            $this->writeLog('mail', false, $noticeMsg, array($post, $returnArr[1]['data']), 'warning', 'lognum1');
 //            data_return($returnArr[1]['code'], $returnArr[1]['data']);
         }
         $this->data = $returnArr['data'];
+        die('welcome');
 //        var_dump($this->data);exit;
-
         Application::getMysql('test', 'slave')->prepare('SELECT * FROM `test`');
 
     }

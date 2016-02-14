@@ -1,6 +1,6 @@
 <?php
 
-namespace app\controller\index;
+namespace controllers\app\index;
 
 use TeoPHP\Controller;
 use TeoPHP\Application;
