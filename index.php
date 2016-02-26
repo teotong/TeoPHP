@@ -5,35 +5,26 @@ require BASEDIR . '/TeoPHP/Loader.php';
 spl_autoload_register('\\TeoPHP\\Loader::autoload');
 
 if (!is_readable('vendor')) {
-    die();
+    die('please composer install frist');
 }
 require 'vendor/autoload.php';
+require 'tools/helper.php';
 
-$a =  explode('/', preg_replace('/^\//', '', $_SERVER['PATH_INFO'], 1));
-$action_num = count($a);
-if ($action_num == 1) {
-    //对内api接口
-    //访问例如：http://framework.mytest.com/add_folder?a=bb
-    $folder = 'api';
-    $action = $a[0];
-    $action = strtolower(str_replace('_', '', trim($action)));
-} elseif ($action_num == 2) {
-    //web应用程序
-    //访问例如：http://framework.mytest.com/index/index?a=bb
-    $folder = 'app';
-    $action = implode('\\', $a);
-    $action = strtolower(trim($action));
+$route = new \TeoPHP\lib\Route();
+$route->run();
+
+if ($folder == 'app') {
+    $return = new \configs\decorator\Template();
 } else {
-    header('HTTP/1.1 404 Not Found');
-    exit;
+    $return = new \configs\decorator\Json();
 }
-$actionsMap = \TeoPHP\Application::getConfig('route_' . $folder);
-
-if (!array_key_exists($action, $actionsMap)) {
-    header('HTTP/1.1 404 Not Found');
-    exit;
-}
-\TeoPHP\Application::run($actionsMap[$action][0], $folder);
+//$return = \TeoPHP\Application::run($address, $folder);
+//echo $decorator;exit;
+//$return = \TeoPHP\Application::getConfig($decorator, BASEDIR . '/configs/decorator');
+//print_r($return);exit;
+$return->beforeRequest($address);
+$return_value = \TeoPHP\Application::run($address, $folder);
+$return->afterRequest($return_value);
 
 
 

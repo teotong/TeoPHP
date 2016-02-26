@@ -11,6 +11,8 @@ class Security
     private $verifyArr = array();
     private $xss;
     private $charCode = 'UTF-8';
+    private $error_code;
+    private $error_data = array();
 
     /*
      * 例子：
@@ -44,12 +46,12 @@ class Security
         trigger_error('Clone is not allow!',E_USER_ERROR);
     }
 
-    //单例方法,用于访问实例的公共的静态方法
+    //工厂 便于访问便利
     public static function getInstance($data, $verifyArr ,$xss = true)
+//    public static function getInstance($verifyArr, $xss = true)
     {
-        if (!(self::$_instance instanceof self)) {
-            self::$_instance = new self($data, $verifyArr ,$xss);
-        }
+        self::$_instance = new self($data, $verifyArr ,$xss);
+//        self::$_instance = new self($_REQUEST, $verifyArr ,$xss);
         return self::$_instance;
     }
 
@@ -158,14 +160,16 @@ class Security
                     }
                 }
 
+                $this->req->data[$key] = $val;
+
                 //是否需要xss转义
                 if ($this->xss) {
                     if(isset($this->verifyArr[$key]['xss'])) {
                         if($this->verifyArr[$key]['xss'] === true) {
-                            $this->data[$key] = htmlspecialchars($val);
+                            $this->req->data[$key]= htmlspecialchars($val);
                         }
                     } else {
-                        $this->data[$key] = htmlspecialchars($val);
+                        $this->req->data[$key] = htmlspecialchars($val);
                     }
                 }
             }
@@ -178,22 +182,70 @@ class Security
      * @param $data
      * @param $verifyArr
      * @param bool $xss xss过滤,是否执行htmlspecialchars
-     * @return array
+     * @return mixed
      */
-    public function verifyParam()
+    public function verifyParam($req)
     {
+        $this->req = $req;
+
         //检查是否必须存在以及是否为空
-        $verifyMust = $this->verifyMust();
-        if (!empty($verifyMust)) {
-            return array('code' => $this->verifyArr[$verifyMust]['error_code'], 'data' => $verifyMust);
+        $param = $this->verifyMust();
+        if (!empty($param)) {
+            $this->error_code = $this->verifyArr[$param]['error_code'];
+            $this->error_data = array(
+                'code' => $this->error_code,
+                'param' => $param
+            );
+            return self::$_instance;
         }
 
         //校验规则
-        $verifyRule = $this->verifyRule();
-        if (!empty($verifyRule)) {
-            return array('code' => $this->verifyArr[$verifyRule]['error_code'], 'data' => $verifyRule);
+        $param = $this->verifyRule();
+        if (!empty($param)) {
+            $this->error_code = $this->verifyArr[$param]['error_code'];
+            $this->error_data = array(
+                'code' => $this->error_code,
+                'param' => $param
+            );
+            return self::$_instance;
         }
 
-        return array('code' => 10000, 'data' => $this->data);
+        return self::$_instance;
     }
+
+    /**
+     * 获得错误数据
+     * @return array
+     */
+    public function getErrorData()
+    {
+        if($this->error_data) {
+            return $this->error_data;
+        }
+        return array();
+    }
+
+    /**
+     * 获得错误码
+     * @return string
+     */
+    public function getErrorCode()
+    {
+        if($this->error_code) {
+            return $this->error_code;
+        }
+        return '';
+    }
+
+    /**
+     * 获得错误的参数
+     * @return mixed
+     */
+    public function getErrorParam()
+    {
+        return $this->error_data['param'];
+    }
+
+
+
 }

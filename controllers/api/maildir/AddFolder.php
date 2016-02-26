@@ -85,26 +85,25 @@ class AddFolder extends Controller
 
     public function doAction()
     {
-        $returnArr = Application::verifyParam($_REQUEST, $this->params);
-        if($returnArr['code'] != 10000) {
-            Application::getLogger(__CLASS__. ':' .__LINE__)->addError('Parameter error' , $returnArr);
+        $data = Application::verifyParam($_REQUEST, $this->params);
+        if($data->getErrorCode()) {
+            Application::getLogger(__CLASS__. ':' .__LINE__)->addError('Parameter error' , $data->getErrorData());
             #TODO   返回
-            die('welcome');
+            die('welcome1');
 //            $this->writeLog('test', false, '测试1111', $encode, 'debug');
 //            $noticeMsg = $this->getNoticeMsg($returnArr[1]['code']);
 //            $this->writeLog('mail', false, $noticeMsg, array($post, $returnArr[1]['data']), 'warning', 'lognum1');
 //            data_return($returnArr[1]['code'], $returnArr[1]['data']);
         }
-        $this->data = $returnArr['data'];
-        die('welcome');
-//        var_dump($this->data);exit;
-        Application::getMysql('test', 'slave')->prepare('SELECT * FROM `test`');
 
-    }
+        $data = $data->getData();
+        //$data为过滤后的数据
+//        $data
+//        Application::getMysql('test', 'slave')->prepare('SELECT * FROM `test`');
+//        die('welcome');
 
-    public function getResultData() {
-        return array(
 
-        );
+        return $data;
+
     }
 }

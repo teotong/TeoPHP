@@ -3,32 +3,37 @@ namespace TeoPHP;
 
 abstract class Controller
 {
-    protected $data;
-    protected $controller_name;
-    protected $view_name;
-    protected $template_dir;
 
-//    public function __construct($controller_name, $view_name)
-    public function __construct()
+    public function __construct($address, $req)
     {
-//        $this->controller_name = $controller_name;
-//        $this->view_name = $view_name;
-//        $this->template_dir = Application::getInstance()->base_dir.'/templates';
+        $this->address = $address;
+        $this->request = $req;
     }
 
     public function assign($key, $value)
     {
-        $this->data[$key] = $value;
+        Application::getTemplate($this->address)->assign($key, $value);
     }
 
-    public function display($file = '')
+    public function display($file = '', $return_value = array())
     {
-        if (empty($file))
-        {
-            $file = strtolower($this->controller_name).'/'.$this->view_name.'.php';
-        }
-        $path = $this->template_dir.'/'.$file;
-        extract($this->data);
-        include $path;
+        Application::getTemplate($this->address)->display($file, $return_value);
     }
+
+
+    public function getRequest($type = 'json', $return_array = array())
+    {
+        $data_class = Application::getVerify($_REQUEST, $this->params);
+        if($data_class->getErrorCode()) {
+            Application::getLogger(__CLASS__. ':' .__LINE__)->addError('Parameter error' , $data_class->getErrorData());
+            if ($type = 'html') {
+                Application::getTemplate($this->address)->display($return_array[0], $return_array[1]);
+            } else {
+                Application::getJson(array($data_class->getErrorParam()), $data_class->getErrorCode(), 'Parameter error')->returnJson();
+            }
+        }
+        return $this->request;
+    }
+
+    abstract protected function doAction();
 }

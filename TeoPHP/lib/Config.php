@@ -4,7 +4,6 @@ namespace TeoPHP\lib;
 
 class Config implements \ArrayAccess
 {
-    private static $_instance;
     private $path;
     private $configs = array();
 
@@ -48,10 +47,7 @@ class Config implements \ArrayAccess
      */
     public static function setConfigPath($config_path)
     {
-        if (!(self::$_instance instanceof self)) {
-            self::$_instance = new self($config_path);
-        }
-        return self::$_instance;
+        return new self($config_path);
     }
 
 }
