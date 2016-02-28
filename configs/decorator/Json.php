@@ -5,7 +5,7 @@ use TeoPHP\Application;
 
 class Json
 {
-    function beforeRequest($address)
+    function beforeRequest($route_address)
     {
 
     }

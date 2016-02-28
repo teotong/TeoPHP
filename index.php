@@ -5,25 +5,22 @@ require BASEDIR . '/TeoPHP/Loader.php';
 spl_autoload_register('\\TeoPHP\\Loader::autoload');
 
 if (!is_readable('vendor')) {
-    die('please composer install frist');
+    die('please run `composer install` first');
 }
 require 'vendor/autoload.php';
 require 'tools/helper.php';
 
 $route = new \TeoPHP\lib\Route();
-$route->run();
+$route_lib = $route->run();
 
-if ($folder == 'app') {
+if ($route_lib->getFolder() == 'app') {
     $return = new \configs\decorator\Template();
 } else {
     $return = new \configs\decorator\Json();
 }
-//$return = \TeoPHP\Application::run($address, $folder);
-//echo $decorator;exit;
-//$return = \TeoPHP\Application::getConfig($decorator, BASEDIR . '/configs/decorator');
-//print_r($return);exit;
-$return->beforeRequest($address);
-$return_value = \TeoPHP\Application::run($address, $folder);
+
+$return->beforeRequest($route_lib->getRouteAddress());
+$return_value = \TeoPHP\Application::run($route_lib->getRouteAddress(), $route_lib->getFolder());
 $return->afterRequest($return_value);
 
 

@@ -7,9 +7,9 @@ class Template
 {
     private $address;
 
-    public function beforeRequest($address)
+    public function beforeRequest($route_address)
     {
-        $this->address = $address;
+        $this->address = $route_address[0];
     }
 
     public function afterRequest($return_value)

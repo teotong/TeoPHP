@@ -42,17 +42,16 @@ class Application
      * @param $action
      * @param string $folder api or contorller or interface
      */
-    public static function run($address, $folder = 'api')
+    public static function run($route_address, $folder = 'api')
     {
         if ($folder == 'interface') {
-            $class = '\\interface\\' . $address;
+            $class = '\\interface\\' . $route_address[0];
         } else {
-            $class = '\\controllers\\' . $folder . '\\' . $address;
+            $class = '\\controllers\\' . $folder . '\\' . $route_address[0];
         }
         try {
-            $req = self::getRequest();
-            $a = new $class($address, $req);
-//            $a = new $class($action);
+            $req = \TeoPHP\lib\Request::getInstance();
+            $a = new $class($route_address, $req);
             return $a->doAction();
         } catch (\Exception $ex) {
             #TODO 记日志 coding....
@@ -67,8 +66,7 @@ class Application
     public static function getXss($harm_string)
     {
         $antiXss = new \voku\helper\AntiXSS();
-        $harmless_string = $antiXss->xss_clean($harm_string);
-        return $harmless_string;
+        return $antiXss->xss_clean($harm_string);
     }
 
     /**
@@ -95,32 +93,6 @@ class Application
     }
 
     /**
-     * 参数验证类
-     * @param $data
-     * @param $verifyArr
-     * @param bool $xss xss过滤,是否执行htmlspecialchars 默认开启xss
-     * @return array
-     */
-    public static function getVerify($data, $verifyArr, $xss = true)
-//    public static function verifyParam($verifyArr, $xss = true)
-    {
-        $req = self::getRequest();
-        $returnArr = \TeoPHP\lib\Security::getInstance($data, $verifyArr, $xss)->verifyParam($req);
-//        $returnArr = \TeoPHP\lib\Security::getInstance($verifyArr, $xss)->verifyParam();
-        return $returnArr;
-    }
-
-    /**
-     * 获得请求类
-     * @return lib\Request
-     */
-    public static function getRequest()
-    {
-        $class = \TeoPHP\lib\Request::getInstance();
-        return $class;
-    }
-
-    /**
      * json类
      * @param array $data
      * @param string $code
@@ -129,14 +101,12 @@ class Application
      */
     public static function getJson($data = array(), $code = '', $msg = '')
     {
-        $class = new \TeoPHP\lib\JsonLib($data, $code, $msg);
-        return $class;
+        return new \TeoPHP\lib\JsonLib($data, $code, $msg);
     }
 
     public static function getTemplate($address)
     {
-        $class = \TeoPHP\lib\TemplateLib::getInstance($address);
-        return $class;
+        return \TeoPHP\lib\TemplateLib::getInstance($address);
     }
 
 }

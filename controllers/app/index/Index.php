@@ -84,11 +84,13 @@ class Index extends Controller
 
     public function doAction()
     {
-        $req = $this->getRequest('html', array('index/index', array('entid'=>'cuowu')));
+//        $req = $this->getRequest();
+        $req = $this->getRequest('html', array('index/index', array('display'=>'cuowu')));
 //        Application::getMysql('test', 'slave')->prepare('SELECT * FROM `test`');
 //        Application::getLogger(__CLASS__. ':' .__LINE__)->addError('message' , '(array)data');
-
-        print_r($req->entid);
+        return array(
+            'display' => $req->entid
+        );
     }
 
 }

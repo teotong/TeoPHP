@@ -3,10 +3,10 @@ namespace TeoPHP;
 
 abstract class Controller
 {
-
-    public function __construct($address, $req)
+    public function __construct($route_address, $req)
     {
-        $this->address = $address;
+        $this->address = $route_address[0];
+        $this->isXSS = $route_address[1];
         $this->request = $req;
     }
 
@@ -20,16 +20,17 @@ abstract class Controller
         Application::getTemplate($this->address)->display($file, $return_value);
     }
 
-
     public function getRequest($type = 'json', $return_array = array())
     {
-        $data_class = Application::getVerify($_REQUEST, $this->params);
-        if($data_class->getErrorCode()) {
-            Application::getLogger(__CLASS__. ':' .__LINE__)->addError('Parameter error' , $data_class->getErrorData());
-            if ($type = 'html') {
-                Application::getTemplate($this->address)->display($return_array[0], $return_array[1]);
-            } else {
-                Application::getJson(array($data_class->getErrorParam()), $data_class->getErrorCode(), 'Parameter error')->returnJson();
+        if (!empty($this->params)) {
+            $data_class = \TeoPHP\lib\Security::getInstance($_REQUEST, $this->params, $this->isXSS)->verifyParam($this->request);
+            if($data_class->getErrorCode()) {
+                Application::getLogger(__CLASS__. ':' .__LINE__)->addError('Parameter error' , $data_class->getErrorData());
+                if ($type == 'html') {
+                    Application::getTemplate($this->address)->display($return_array[0], $return_array[1]);
+                } else {
+                    Application::getJson(array($data_class->getErrorParam()), $data_class->getErrorCode(), 'Parameter error')->returnJson();
+                }
             }
         }
         return $this->request;

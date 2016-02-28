@@ -4,6 +4,8 @@ namespace TeoPHP\lib;
 class Route
 {
     private $config_path;
+    private $folder;
+    private $route_address;
 
     public function __construct()
     {
@@ -13,7 +15,7 @@ class Route
     public function run()
     {
         $a =  explode('/', preg_replace('/^\//', '', $_SERVER['PATH_INFO'], 1));
-        var_dump($a);exit;
+//        var_dump($a);exit;
         $action_num = count($a);
         if ($action_num == 1) {
             //对内api接口
@@ -37,16 +39,17 @@ class Route
             header('HTTP/1.1 404 Not Found');
             exit;
         }
-        //从actionMap获得的地址 例如:index\\Index
-        $this->address = $actionsMap[$action][0];
-
+//        var_dump($actionsMap[$action]);exit;
+        //从actionMap获得的路由地址 即configs/route里的action地址 例如: array('index\\Index', true)
+        $this->route_address = $actionsMap[$action];
         return $this;
     }
 
-    public function getAdress()
+    public function getRouteAddress()
     {
-        return $this->address;
+        return $this->route_address;
     }
+
 
     public function getFolder()
     {
